@@ -75,7 +75,7 @@
       text(
       size: 12pt,
       weight: "bold",
-      block(spacing: .65em) + box(it.body + [.] + h(.4em)),
+      block(spacing: .65em) + box(it.body + h(.4em)),
     )
   }
 
@@ -83,13 +83,14 @@
   authors_format(authors)
   date_format(date)
 
+  // More text stuff
   set par(
     first-line-indent: 1em,
     justify: true,
     spacing: .65em
   )
   
-  // Equation environment stuff
+  // == Equation environment stuff
   // Make spacing for block equations correct
   show math.equation.where(block: true): set block(spacing: 1.2em)
   // Do not automatically scale inline equation parentheses
@@ -108,10 +109,35 @@
       
       left + it.base + right
     }
-    
     eq
   }
-
+  // Only number equations which have labels (thanks to
+  // https://forum.typst.app/t/how-to-conditionally-enable-equation-numbering-for-labeled-equations/977/14 )
+  set math.equation(numbering: "(1)")
+  show math.equation: it => {
+    if it.block and not it.has("label") [
+      #counter(math.equation).update(v => v - 1)
+      #math.equation(it.body, block: true, numbering: none)#label("")
+    ] else {
+      it
+    }  
+  }
+  // Does not write out `Equation XXX` when referencing an equation. Taken from
+  // https://typst.app/docs/reference/model/ref/
+  show ref: it => {
+    let el = it.element
+    if el != none and el.func() == math.equation {
+      // Override equation references.
+      link(el.location(),numbering(
+        el.numbering,
+        ..counter(math.equation).at(el.location())
+      ))
+    } else {
+      // Other references as usual.
+      it
+    }
+  }
+    
   // And that's all!
   doc
 }
