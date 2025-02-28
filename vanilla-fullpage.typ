@@ -8,9 +8,8 @@
 }
 
 #let email_format(email) = {
-  // Using fonts shipped with typst for compatibility
-  set text(font: "DejaVu Sans Mono", weight:500, size:9pt)
-  link("mailto:"+email)
+    set text(font: "DejaVu Sans Mono", weight:500, size:9pt)
+    link("mailto:"+email)
 }
 
 #let authors_format(authors) = {
@@ -67,23 +66,29 @@
     size: 12pt,
     spacing: 70%
   )
-  set par(justify: true)
-  set heading(numbering: "1.1.1 ")
 
   // Heading stuff
-  show heading: set block(below: 1em, above: 1em)
+  set heading(numbering: "1.1.1   ")
+  show heading: set block(below: .7em, above: 1.5em)
   show heading.where(level: 4): it => {
       v(.5em)
       text(
       size: 12pt,
       weight: "bold",
-      it.body + [.] + h(.4em),
+      block(spacing: .65em) + box(it.body + [.] + h(.4em)),
     )
   }
 
   title_format(title)
   authors_format(authors)
   date_format(date)
+
+  set par(
+    first-line-indent: 1em,
+    justify: true,
+    spacing: .65em
+  )
+  show math.equation.where(block: true): set block(spacing: 1.2em)
 
   doc
 }
