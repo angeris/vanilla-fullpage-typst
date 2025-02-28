@@ -43,7 +43,7 @@ function_ of a blockchain: the predicates ensure that the latest state of the
 blockchain, once it has been modified by the transactions of a block, is still a
 valid end state.
 
-#paragraph[Designs] In early blockchain designs, verifying the state transition
+#paragraph[Designs.] In early blockchain designs, verifying the state transition
 function required down- loading all transaction data for each block and
 verifying the predicates for all downloaded blocks. As blockchains scale to
 support more concurrent users, and therefore bigger blocks
