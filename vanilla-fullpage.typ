@@ -36,7 +36,7 @@
 
 #let abstract(abs) = {
   set align(center)
-  pad(bottom: .1in, left: .25in, right: .25in, top:.25in)[
+  pad(bottom: .2in, left: .25in, right: .25in, top:.25in)[
       *Abstract*
 
       #set align(left)
@@ -88,8 +88,31 @@
     justify: true,
     spacing: .65em
   )
+  
+  // Equation environment stuff
+  // Make spacing for block equations correct
   show math.equation.where(block: true): set block(spacing: 1.2em)
+  // Do not automatically scale inline equation parentheses
+  show math.equation.where(block: false): eq => {
+    show math.lr: it => it.body
+    show math.attach: it => {
+      if it.base.func() != math.lr {
+        return it
+      }
+      
+      let fields = it.fields()
+      let right = math.attach(none, t: fields.t, b: fields.b)
+      let left = if fields.tl != none or fields.bl != none {
+        math.attach(none, tl: fields.tl, bl: fields.bl)
+      }
+      
+      left + it.base + right
+    }
+    
+    eq
+  }
 
+  // And that's all!
   doc
 }
 
