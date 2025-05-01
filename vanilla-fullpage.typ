@@ -68,8 +68,15 @@
   )
 
   // Heading stuff
-  set heading(numbering: "1.1.1   ")
-  show heading: set block(below: .7em, above: 1.5em)
+  set heading(numbering: "1.1.1")
+  show heading: it => {
+    if it.numbering != none {
+      block(counter(heading).display(it.numbering) + h(.8em) + it.body)
+    }
+    else {
+      block(it.body)
+    }
+  }
   show heading.where(level: 4): it => {
       v(.5em)
       text(
@@ -89,6 +96,20 @@
     justify: true,
     spacing: .65em
   )
+  
+  // Figure stuff
+  show figure: set block(above: 1.5em, below: 1.5em)
+  show figure.caption: c => [
+    #set text(size: 11pt)
+    #text(weight: "bold")[
+      #c.supplement
+      #context c.counter.display(c.numbering)
+      // Hacky, but works for now
+      #h(-3pt)
+      #c.separator
+    ]
+    #c.body
+  ]
   
   // == Equation environment stuff
   // Make spacing for block equations correct
@@ -132,16 +153,37 @@
         el.numbering,
         ..counter(math.equation).at(el.location())
       ))
+    } else if el != none and el.func() == heading {
+      link(el.location(), numbering(
+        el.numbering,
+        ..counter(heading).at(el.location())))
     } else {
       // Other references as usual.
       it
     }
   }
+
+  // Make enums breathe
+  set enum(indent: 1.5em, spacing: 1.2em)
+  show enum: set block(inset: (top: .5em, bottom: .5em))
+
+  // Make lists breathe
+  set list(indent: 1.5em, spacing: 1.2em)
+  show list: set block(inset: (top: .5em, bottom: .5em))
     
+  // Make links monospaced
+  // show link: set text(font: "DejaVu Sans Mono", size: 10pt)
+  
   // And that's all!
   doc
 }
 
 #let paragraph(body) = {
   heading(body, depth: 4)
+}
+
+#let appendix(body) = {
+  set heading(numbering: "A", supplement: [Appendix])
+  counter(heading).update(0)
+  body
 }
